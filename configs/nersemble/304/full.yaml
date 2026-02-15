@@ -58,10 +58,9 @@ training.depth_thres: 5
 
 # Stages Control
 training.stages:
-- head
 - joint
 training.stages_epoch:
-- 50
+-
 training.head_stage_loss:
 - head
 training.joint_stage_loss:

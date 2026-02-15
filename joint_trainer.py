@@ -124,6 +124,18 @@ class JointTrainer:
             self.hairwrapper.get_model("canonical_gs").load_state_dict(
                 _state_dict, self.optimizer, self.global_step, self.config["gs.upSH"]
             )
+
+            # load face weights from the same pretrained checkpoint
+            self.facewrapper.restore_models(state_dict, self.logger)
+
+            # load optimized flame params from the pretrained checkpoint directory
+            dir_name = os.path.dirname(self.gs_pretrain)
+            flame_params_path = os.path.join(dir_name, "flame_params.npz")
+            if os.path.exists(flame_params_path):
+                opt_flame_params = np.load(flame_params_path)
+                self.load_all_flame_params(opt_flame_params)
+                self.logger.info("[MODEL_RESTORE] Loaded flame params from {}".format(flame_params_path))
+
             # learn deformation field & head tex
             self._unfreeze("hair")
             self._unfreeze("head_tex")

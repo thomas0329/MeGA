@@ -78,7 +78,7 @@ cd /path/to/MeGA
 bash ./scripts/train_hair.sh
 ```
 
-After that, your hair model will be saved in your specified directory (i.e., $WORKSPACE/$VERSION/checkpoint_reset.pth).
+After that, your hair model will be saved in your specified directory (i.e., $WORKSPACE/$VERSION/checkpoint_reset.pth). This checkpoint contains both the canonical hair Gaussians and the trained face weights (neural textures, displacement decoder, pixel decoder, and optimized FLAME parameters).
 
 Next, train the full avatar model using
 ```shell
@@ -88,6 +88,8 @@ Next, train the full avatar model using
 cd /path/to/MeGA
 bash ./scripts/train_full.sh
 ```
+
+> **Note:** The full avatar training (`train_full.sh`) now starts directly in the joint optimization stage. Face weights and FLAME parameters are automatically loaded from the hair training checkpoint (`gs.pretrain`), eliminating the previous redundant head warm-up stage. This matches the 3-stage pipeline described in the paper (Section 4): facial mesh optimization -> canonical hair optimization -> joint optimization.
 
 > For brief, you can also use the command ```bash ./scripts/train.all.sh``` after you change all template paths mentioned above.
 
