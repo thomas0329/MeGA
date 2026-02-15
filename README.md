@@ -107,6 +107,38 @@ bash ./scripts/train_full_static.sh 306   # Stage 3
 
 This runs the same 3-stage pipeline (head mesh → canonical hair → joint fine-tuning), but without hair deformation: no DeformMLP is created, AIAP regularization is disabled, and the dataset uses the single-frame (`onef`) split. In the joint stage, canonical Gaussians are frozen and only head textures are fine-tuned using `hairwrapper.render()` (no rigid/non-rigid deformation).
 
+#### Static single-frame training on custom data
+
+To train on your own multiview capture (instead of NeRSemble subjects), prepare your data directory with the following structure:
+
+```
+subject_seq_whiteBg/
+├── images/              # Multiview images: {timestep}_{camera}.png
+├── fg_masks/            # Foreground masks: {timestep}_{camera}.png
+├── flame_param/         # FLAME parameters: {timestep}.npz
+├── init_pts_150000.npy  # Initial point cloud (see sample_init_pts.py)
+├── transforms_onef.json # Full single-frame camera transforms (all cameras)
+├── transforms_onef_train.json  # Train split (exclude held-out camera)
+└── transforms_onef_val.json    # Val split (held-out camera only)
+```
+
+The train/val split files are derived from `transforms_onef.json` by partitioning cameras. For example, to hold out camera 8 for validation:
+- `transforms_onef_train.json` — all frames except `camera_index == 8`
+- `transforms_onef_val.json` — only `camera_index == 8`
+
+Then create config files at `configs/nersemble/custom/static_hair.yaml` and `configs/nersemble/custom/static_full.yaml` based on the 306 templates, updating paths:
+- `data.root` → your data directory (e.g., `'subject_seq_whiteBg'`)
+- `data.canonical_flame_path` → path to canonical FLAME params (e.g., `'subject_seq_whiteBg/flame_param/00000.npz'`)
+- `gs.init_pts` → path to initial points (e.g., `'subject_seq_whiteBg/init_pts_150000.npy'`)
+- `gs.pretrain` (in `static_full.yaml` only) → path to the hair checkpoint from stage 1+2
+
+Run training:
+```shell
+cd /path/to/MeGA
+bash ./scripts/train_hair_static.sh custom   # Stage 1+2
+bash ./scripts/train_full_static.sh custom   # Stage 3
+```
+
 ### Testing (Including computing metrics)
 
 If you want to computer metrics for test/val dataset, you can run
@@ -161,6 +193,8 @@ bash ./scripts/img2video.sh /path/to/checkpoints/MeGA/0801/train_306_b16_MeGA/du
 ```
 
 The video can be generated in '/path/to/checkpoints/MeGA/0801/train_306_b16_MeGA/duola/exp3_eval/output.mp4'.
+
+shortcut: sshgo 
 
 ## Citation
 

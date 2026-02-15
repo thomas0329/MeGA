@@ -59,7 +59,7 @@ CLAUDE.md
 MeGA.md
 checkpoints/
 nersemble.tar.gz
-nersemble/
+/nersemble/
 pretrained_models-20250803T101040Z-1-001.zip
 pretrained_models/
 subject_seq_whiteBg/
