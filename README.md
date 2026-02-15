@@ -91,7 +91,21 @@ bash ./scripts/train_full.sh
 
 > **Note:** The full avatar training (`train_full.sh`) now starts directly in the joint optimization stage. Face weights and FLAME parameters are automatically loaded from the hair training checkpoint (`gs.pretrain`), eliminating the previous redundant head warm-up stage. This matches the 3-stage pipeline described in the paper (Section 4): facial mesh optimization -> canonical hair optimization -> joint optimization.
 
-> For brief, you can also use the command ```bash ./scripts/train.all.sh``` after you change all template paths mentioned above.
+> For brief, you can also use the command ```bash ./scripts/train_all.sh``` after you change all template paths mentioned above.
+
+#### Static single-frame training
+
+For single-frame multiview input (no temporal sequences), use the static training pipeline:
+```shell
+# Before executing, change every path ('/path/to/...') to your specific path.
+# Including files: ['./scripts/train_static.sh', './configs/nersemble/306/static_hair.yaml', './configs/nersemble/306/static_full.yaml']
+
+cd /path/to/MeGA
+bash ./scripts/train_hair_static.sh 306   # Stage 1+2                                 
+bash ./scripts/train_full_static.sh 306   # Stage 3      
+```
+
+This runs the same 3-stage pipeline (head mesh → canonical hair → joint fine-tuning), but without hair deformation: no DeformMLP is created, AIAP regularization is disabled, and the dataset uses the single-frame (`onef`) split. In the joint stage, canonical Gaussians are frozen and only head textures are fine-tuned using `hairwrapper.render()` (no rigid/non-rigid deformation).
 
 ### Testing (Including computing metrics)
 

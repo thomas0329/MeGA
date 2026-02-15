@@ -42,11 +42,12 @@ class GSHairWrapper(nn.Module):
         self.models["canonical_gs"].create_from_pts(init_pts, self.spatial_lr_scale)
         self.parameters_to_train += self.models["canonical_gs"].trainable_params(cfg)
 
-        # Deformation MLPs
-        self.models["deform_mlp"] = DeformMLP(cfg, self.attr_dims).cuda()
-        self.parameters_to_train += params_with_lr(
-            list(self.models["deform_mlp"].named_parameters()), cfg["gs.deform_lr"], label="hair"
-        )
+        # Deformation MLPs (skip for static single-frame mode)
+        if not cfg.get("pipe.static_mode", False):
+            self.models["deform_mlp"] = DeformMLP(cfg, self.attr_dims).cuda()
+            self.parameters_to_train += params_with_lr(
+                list(self.models["deform_mlp"].named_parameters()), cfg["gs.deform_lr"], label="hair"
+            )
 
         # pixel coords
         px, py = np.meshgrid(np.arange(self.img_w), np.arange(self.img_h))

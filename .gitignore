@@ -52,3 +52,16 @@ coverage.xml
 
 # Sphinx documentation
 docs/_build/
+SKM_NewMetaHumanCharacter0_FaceMesh.FBX
+SKM_NewMetaHumanCharacter0_FaceMesh_LOD0.obj
+SKM_NewMetaHumanCharacter0_FaceMesh_LOD0_verts.npy
+CLAUDE.md
+MeGA.md
+checkpoints/
+nersemble.tar.gz
+nersemble/
+pretrained_models-20250803T101040Z-1-001.zip
+pretrained_models/
+subject_seq_whiteBg/
+submodules/SegFace/
+submodules/face-parsing/

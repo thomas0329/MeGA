@@ -19,7 +19,9 @@ class NeRSembleData(Dataset):
         self.rate_h, self.rate_w = self.img_h / 802.0, self.img_w / 550.0
 
         self.basedir = config["data.root"]
-        if config["pipe.neutral_hair"]:
+        if config.get("pipe.static_mode", False):
+            split = "onef_train" if split == "train" else "onef_val"
+        elif config["pipe.neutral_hair"]:
             split = "onef"
         jsonfile_path = os.path.join(self.basedir, "transforms_{}.json".format(split))
 

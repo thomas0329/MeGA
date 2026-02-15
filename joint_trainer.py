@@ -41,7 +41,7 @@ class JointTrainer:
             "[ERROR] The length of 'training.stages_epoch' should be larger than the length of 'training.stages' - 1."
         )
         assert (
-            self.gs_pretrain is not None or config["bald"]
+            self.gs_pretrain is not None or config["bald"] or config.get("pipe.static_mode", False)
         ), "[ERROR] You need set 'gs.pretrain' to pretrained neutral hair ckpt."
 
         self.xyz_cond = config.get("flame.xyz_cond", False)
@@ -115,29 +115,32 @@ class JointTrainer:
         if stage == "joint":
             self._freeze("all")
 
-            # load canonical hair
-            state_dict = torch.load(self.gs_pretrain, map_location=lambda storage, loc: storage.cpu())
-            _state_dict = {
-                k.replace("module.", "") if k.startswith("module.") else k: v
-                for k, v in state_dict["canonical_gs"].items()
-            }
-            self.hairwrapper.get_model("canonical_gs").load_state_dict(
-                _state_dict, self.optimizer, self.global_step, self.config["gs.upSH"]
-            )
+            if self.gs_pretrain is not None:
+                # load canonical hair
+                state_dict = torch.load(self.gs_pretrain, map_location=lambda storage, loc: storage.cpu())
+                _state_dict = {
+                    k.replace("module.", "") if k.startswith("module.") else k: v
+                    for k, v in state_dict["canonical_gs"].items()
+                }
+                self.hairwrapper.get_model("canonical_gs").load_state_dict(
+                    _state_dict, self.optimizer, self.global_step, self.config["gs.upSH"]
+                )
 
-            # load face weights from the same pretrained checkpoint
-            self.facewrapper.restore_models(state_dict, self.logger)
+                # load face weights from the same pretrained checkpoint
+                self.facewrapper.restore_models(state_dict, self.logger)
 
-            # load optimized flame params from the pretrained checkpoint directory
-            dir_name = os.path.dirname(self.gs_pretrain)
-            flame_params_path = os.path.join(dir_name, "flame_params.npz")
-            if os.path.exists(flame_params_path):
-                opt_flame_params = np.load(flame_params_path)
-                self.load_all_flame_params(opt_flame_params)
-                self.logger.info("[MODEL_RESTORE] Loaded flame params from {}".format(flame_params_path))
+                # load optimized flame params from the pretrained checkpoint directory
+                dir_name = os.path.dirname(self.gs_pretrain)
+                flame_params_path = os.path.join(dir_name, "flame_params.npz")
+                if os.path.exists(flame_params_path):
+                    opt_flame_params = np.load(flame_params_path)
+                    self.load_all_flame_params(opt_flame_params)
+                    self.logger.info("[MODEL_RESTORE] Loaded flame params from {}".format(flame_params_path))
 
-            # learn deformation field & head tex
-            self._unfreeze("hair")
+            # In static mode, canonical Gaussians stay frozen;
+            # only head textures are fine-tuned
+            if not self.config.get("pipe.static_mode", False):
+                self._unfreeze("hair")
             self._unfreeze("head_tex")
         elif stage == "head":
             # learn facial mesh
@@ -659,9 +662,12 @@ class JointTrainer:
 
         rasterized_face, rigid_trans = self.facewrapper.render(self.camera, self.flame_params, self.view, bg_color)
         if self.stage == "joint":
-            rasterized_hair = self.hairwrapper.render_with_trans(
-                self.camera, self.flame_params, rigid_trans[:, :3, :3], rigid_trans[:, :3, 3], bg_color
-            )
+            if self.config.get("pipe.static_mode", False):
+                rasterized_hair = self.hairwrapper.render(self.camera, bg_color)
+            else:
+                rasterized_hair = self.hairwrapper.render_with_trans(
+                    self.camera, self.flame_params, rigid_trans[:, :3, :3], rigid_trans[:, :3, 3], bg_color
+                )
 
         outputs = self.fuse(rasterized_hair, rasterized_face, is_val=is_val)
 
