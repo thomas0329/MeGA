@@ -65,3 +65,4 @@ pretrained_models/
 subject_seq_whiteBg/
 submodules/SegFace/
 submodules/face-parsing/
+configs/nersemble/306/params_tmp.yaml

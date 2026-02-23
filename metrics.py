@@ -41,7 +41,7 @@ with open(config_path, "r") as f:
 config["training.pretrained_checkpoint_path"] = args.checkpoint
 config["local_workspace"] = dir_name
 config["data.load_images"] = False
-# config["gs.pretrain"] = None
+config["gs.pretrain"] = None
 
 seed_everything(42)
 

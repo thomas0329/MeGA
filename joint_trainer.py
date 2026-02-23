@@ -187,8 +187,8 @@ class JointTrainer:
 
         # uv --> mesh vertices, barycentric
         # TODO: external settings
-        self.uv2verts_ids = np.load("/path/to/face-data/unwrap_uv_idx_v_idx.npy")
-        self.uv2verts_bw = np.load("/path/to/face-data/unwrap_uv_idx_bw.npy")
+        self.uv2verts_ids = np.load("face-data/unwrap_uv_idx_v_idx.npy")
+        self.uv2verts_bw = np.load("face-data/unwrap_uv_idx_bw.npy")
 
     def _init_losses(self):
         # TODO: check unuseful losses
