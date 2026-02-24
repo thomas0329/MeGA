@@ -80,10 +80,10 @@ def faces_of_verts(vert_idcs, all_faces, return_face_idcs=False):
     return vert_faces
 
 
-subject = "306"
-outpath = f"/path/to/nersemble/{subject}/init_pts_150000.npy"
+subject = "custom"
+outpath = "../../subject_seq_whiteBg/init_pts_150000.npy"
 
-canonical_cm = load_obj(f"/root/workspace/PaSA/tools/sample_init_pts/{subject}.obj")
+canonical_cm = load_obj("./canonical_custom.obj")
 verts = canonical_cm["verts"]
 faces = canonical_cm["vert_ids"]
 num_pts = 50000

@@ -4,8 +4,8 @@ data.canonical_flame_path: 'subject_seq_whiteBg/flame_param/00000.npz'
 data.per_gpu_batch_size: 8
 data.num_workers: 8
 data.load_images: True
-data.img_w: 550
-data.img_h: 802
+data.img_w: 512
+data.img_h: 512
 
 # Training
 training.enc.mode: texture

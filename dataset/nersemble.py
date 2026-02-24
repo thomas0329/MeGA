@@ -16,7 +16,7 @@ class NeRSembleData(Dataset):
 
         self.config = config
         self.img_h, self.img_w = config["data.img_h"], config["data.img_w"]
-        self.rate_h, self.rate_w = self.img_h / 802.0, self.img_w / 550.0
+        # self.rate_h, self.rate_w = self.img_h / 802.0, self.img_w / 550.0
 
         self.basedir = config["data.root"]
         if config.get("pipe.static_mode", False):
@@ -28,6 +28,12 @@ class NeRSembleData(Dataset):
         with open(jsonfile_path) as fr:
             jsonfile = json.load(fr)
         self.framelist = jsonfile["frames"]
+
+        # Modified: read original image dims from JSON instead of hardcoded 802/550
+        first_frame = self.framelist[0]
+        orig_h = float(first_frame.get("h", 802))
+        orig_w = float(first_frame.get("w", 550))
+        self.rate_h, self.rate_w = self.img_h / orig_h, self.img_w / orig_w
 
         campos = []
         for frame in self.framelist:
