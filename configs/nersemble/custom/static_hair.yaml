@@ -6,6 +6,7 @@ data.num_workers: 8
 data.load_images: True
 data.img_w: 512
 data.img_h: 512
+data.depth_scale: 10  # Unreal Engine depth is in cm; 10 converts to mm
 
 # Training
 training.enc.mode: texture

@@ -34,6 +34,8 @@ class NeRSembleData(Dataset):
         orig_h = float(first_frame.get("h", 802))
         orig_w = float(first_frame.get("w", 550))
         self.rate_h, self.rate_w = self.img_h / orig_h, self.img_w / orig_w
+        # Modified: configurable depth scale (default 1000 = meters to mm)
+        self.depth_scale = config.get("data.depth_scale", 1000)
 
         campos = []
         for frame in self.framelist:
@@ -65,7 +67,7 @@ class NeRSembleData(Dataset):
         sample = {"frame_idx": frame["timestep_index"], "cam_idx": frame["camera_index"], "cam": frame["camera_id"]}
         sample["name"] = frame["file_path"].split("/")[-1][:-4]
 
-        cx, cy = frame["cx"] * self.rate_w, frame["cy"] * self.rate_h
+        cx, cy = frame["cx"] * self.rate_w, frame["cy"] * self.rate_h   # rates are 1
         fx, fy = fov2focal(frame["camera_angle_x"], self.img_w), fov2focal(frame["camera_angle_y"], self.img_h)
         intrinsics = np.array([[fx, 0, cx], [0, fy, cy], [0, 0, 1]])
         sample["intr"] = intrinsics
@@ -95,7 +97,8 @@ class NeRSembleData(Dataset):
         path = imgpath.replace("images", "depths").replace("{}.png".format(basename) if painting else ".png", ".npz")
         depth_map = sparse.load_npz(path).todense()
         depth_map = cv2.resize(depth_map, (self.img_w, self.img_h), interpolation=cv2.INTER_LINEAR)
-        depth_map = depth_map * 1000  # convert to mm
+        # depth_map = depth_map * 1000  # convert to mm
+        depth_map = depth_map * self.depth_scale
         sample["depth_map"] = depth_map
 
         # load parsing results
