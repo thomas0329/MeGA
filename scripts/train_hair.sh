@@ -2,10 +2,10 @@
 
 export CUDA_VISIBLE_DEVICES=0
 
-ID=$1
-DATE=0407
+ID=306
+DATE=original
 
-WORKSPACE=/path/to/checkpoints/mega/$DATE/
+WORKSPACE=checkpoints/mega/$DATE/
 VERSION=train_${ID}_b8_MeGA_hair
 
 DEFAULT_PARAMS=./configs/nersemble/${ID}/hair.yaml
