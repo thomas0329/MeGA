@@ -1,5 +1,6 @@
 # Data
-data.root: 'nersemble/preprocess/306/UNION10_306_EMO1234EXP234589_v16_DS2-0.5x_lmkSTAR_teethV3_SMOOTH_offsetS_whiteBg_maskBelowLine'
+# data.root: 'nersemble/preprocess/306/UNION10_306_EMO1234EXP234589_v16_DS2-0.5x_lmkSTAR_teethV3_SMOOTH_offsetS_whiteBg_maskBelowLine'
+data.root: 'nersemble/preprocess/306/UNION10_306_2f'
 data.canonical_flame_path: 'nersemble/preprocess/306/306_EMO-3_v16_DS2-0.5x_lmkSTAR_teethV3_SMOOTH_offsetS_whiteBg_maskBelowLine/flame_param/00000.npz'
 data.per_gpu_batch_size: 10
 data.num_workers: 10
@@ -18,9 +19,9 @@ training.gpus: "0"
 training.learning_rate: 0.001
 training.step:
 - 
-training.visual_interval: 200
-training.eval_interval: 5000
-training.epochs: 80
+training.visual_interval: 500
+training.eval_interval: 500
+training.epochs: 16000
 training.pretrained_checkpoint_path: null
 training.pe: 'LPE'
 training.pe.num_freqs: 8
@@ -57,11 +58,12 @@ training.lambda_mesh.verts_scale: 1.0
 training.depth_thres: 5
 
 # Stages Control
+# 1500 steps is not enough for joint optimization
 training.stages:
 - head
 - joint
 training.stages_epoch:
-- 50
+- 8000
 training.head_stage_loss:
 - head
 training.joint_stage_loss:
