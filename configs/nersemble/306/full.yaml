@@ -1,6 +1,6 @@
 # Data
 # data.root: 'nersemble/preprocess/306/UNION10_306_EMO1234EXP234589_v16_DS2-0.5x_lmkSTAR_teethV3_SMOOTH_offsetS_whiteBg_maskBelowLine'
-data.root: 'nersemble/preprocess/306/UNION10_306_2f'
+data.root: 'nersemble/preprocess/306/UNION10_306_1f'
 data.canonical_flame_path: 'nersemble/preprocess/306/306_EMO-3_v16_DS2-0.5x_lmkSTAR_teethV3_SMOOTH_offsetS_whiteBg_maskBelowLine/flame_param/00000.npz'
 data.per_gpu_batch_size: 10
 data.num_workers: 10

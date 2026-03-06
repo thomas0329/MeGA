@@ -3,7 +3,7 @@
 export CUDA_VISIBLE_DEVICES=0
 
 ID=306
-DATE=1f-16k
+DATE=1f-16k-w-valid
 
 WORKSPACE=checkpoints/mega/$DATE/
 VERSION=train_${ID}_b16_MeGA

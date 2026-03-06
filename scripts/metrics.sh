@@ -2,7 +2,7 @@
 
 export CUDA_VISIBLE_DEVICES=0
 
-CKPT_PATH="checkpoints/mega/original/train_306_b16_MeGA/checkpoint_latest.pth"
+CKPT_PATH="checkpoints/mega/1f-16k/train_306_b16_MeGA/checkpoint_latest.pth"
 SPLIT="val"    # choose from ['test', 'val', 'train', 'onef']
 
 # Command Line Arguments for metrics.py
