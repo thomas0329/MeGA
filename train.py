@@ -74,7 +74,7 @@ def get_dataset(logger, datatype="nersemble"):
         batch_size=batch_size,
         shuffle=False,
         num_workers=config["data.num_workers"],
-        drop_last=True,
+        drop_last=False,
     )
 
     return train_loader, val_loader, train_set.radius, train_set.load_all_flame_params()

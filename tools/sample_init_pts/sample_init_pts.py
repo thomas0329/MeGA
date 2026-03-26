@@ -1,3 +1,6 @@
+import argparse
+import os
+
 import numpy as np
 import point_cloud_utils as pcu
 
@@ -80,35 +83,43 @@ def faces_of_verts(vert_idcs, all_faces, return_face_idcs=False):
     return vert_faces
 
 
-subject = "306"
-outpath = f"/path/to/nersemble/{subject}/init_pts_150000.npy"
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--mesh", type=str, required=True,
+                        help="Path to canonical mesh .obj")
+    parser.add_argument("--output", type=str, required=True,
+                        help="Output path for init_pts .npy")
+    parser.add_argument("--scalp_idcs", type=str,
+                        default=os.path.join(os.path.dirname(__file__), "scalp_idcs.npy"),
+                        help="Path to scalp_idcs.npy")
+    parser.add_argument("--num_surface", type=int, default=50000)
+    parser.add_argument("--num_off_surface", type=int, default=100000)
+    parser.add_argument("--sigma", type=float, default=0.02)
+    args = parser.parse_args()
 
-canonical_cm = load_obj(f"/root/workspace/PaSA/tools/sample_init_pts/{subject}.obj")
-verts = canonical_cm["verts"]
-faces = canonical_cm["vert_ids"]
-num_pts = 50000
+    canonical_cm = load_obj(args.mesh)
+    verts = canonical_cm["verts"]
+    faces = canonical_cm["vert_ids"]
 
-num_off_pts = 100000
-sigma = 0.02
+    scalp_idcs = np.load(args.scalp_idcs)
+    vert_normals = pcu.estimate_mesh_vertex_normals(verts, faces)
 
-scalp_idcs = np.load("./scalp_idcs.npy")
-vert_normals = pcu.estimate_mesh_vertex_normals(verts, faces)
+    scalp_faces = faces_of_verts(scalp_idcs, faces)
+    print(f"Mesh: {len(verts)} verts, {len(faces)} faces")
+    print(f"Scalp: {len(scalp_idcs)} vertex indices, {len(scalp_faces)} faces")
 
-scalp_faces = faces_of_verts(scalp_idcs, faces)
-f_i, bc = pcu.sample_mesh_random(verts, scalp_faces, num_samples=num_pts)
+    f_i, bc = pcu.sample_mesh_random(verts, scalp_faces, num_samples=args.num_surface)
+    surf_pts = pcu.interpolate_barycentric_coords(scalp_faces, f_i, bc, verts)
+    surf_normals = pcu.interpolate_barycentric_coords(scalp_faces, f_i, bc, vert_normals)
 
-surf_pts = pcu.interpolate_barycentric_coords(scalp_faces, f_i, bc, verts)
-surf_normals = pcu.interpolate_barycentric_coords(scalp_faces, f_i, bc, vert_normals)
+    # sample off-surface pts
+    rnd_idx = np.random.randint(0, surf_pts.shape[0], args.num_off_surface)
+    off_pts = surf_pts[rnd_idx] + surf_normals[rnd_idx] * np.random.rand(args.num_off_surface, 3) * args.sigma
 
-# write_obj("surf_pts.obj", surf_pts)
+    sampled_pts = np.concatenate([surf_pts, off_pts], axis=0)
+    np.save(args.output, sampled_pts)
+    print(f"Saved {args.output}: {sampled_pts.shape}")
 
-# sample off-surface pts
-rnd_idx = np.random.randint(0, surf_pts.shape[0], num_off_pts)
-off_pts = surf_pts[rnd_idx] + surf_normals[rnd_idx] * np.random.rand(num_off_pts, 3) * sigma
 
-sampled_pts = np.concatenate([surf_pts, off_pts], axis=0)
-write_obj(  # For test
-    "./init_pts_150000.obj",
-    sampled_pts,
-)
-np.save(outpath, sampled_pts)
+if __name__ == "__main__":
+    main()

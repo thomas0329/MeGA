@@ -27,7 +27,7 @@ class GSHairWrapper(nn.Module):
         }
         self.cfg = cfg
         self.img_h, self.img_w = cfg["data.img_h"], cfg["data.img_w"]
-        self.rate_h, self.rate_w = self.img_h / 802.0, self.img_w / 550.0
+        self.rate_h, self.rate_w = self.img_h / self.cfg.get("data.original_img_h", 802.0), self.img_w / self.cfg.get("data.original_img_w", 550.0)
         self.rate = min(self.rate_h, self.rate_w)
         self.spatial_lr_scale = spatial_lr_scale
         self.buffer = {}

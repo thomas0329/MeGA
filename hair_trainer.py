@@ -32,7 +32,7 @@ class HairTrainer:
         self.config = config
         self.neural = config.get("training.neural_texture", True)
         self.img_h, self.img_w = config["data.img_h"], config["data.img_w"]
-        self.rate_h, self.rate_w = self.img_h / 802.0, self.img_w / 550.0
+        self.rate_h, self.rate_w = self.img_h / config.get("data.original_img_h", 802.0), self.img_w / config.get("data.original_img_w", 550.0)
         self.rate = min(self.rate_h, self.rate_w)
         self.nan_detect = False
         self.is_val = is_val

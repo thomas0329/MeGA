@@ -22,7 +22,7 @@ class JointTrainer:
         self.config = config
         self.neural = config.get("training.neural_texture", True)
         self.img_h, self.img_w = config["data.img_h"], config["data.img_w"]
-        self.rate_h, self.rate_w = self.img_h / 802.0, self.img_w / 550.0
+        self.rate_h, self.rate_w = self.img_h / config.get("data.original_img_h", 802.0), self.img_w / config.get("data.original_img_w", 550.0)
         self.rate = min(self.rate_h, self.rate_w)
         self.nan_detect = False
         self.is_val = is_val
@@ -819,6 +819,7 @@ class JointTrainer:
             value.update(loss_dict[key].item())
 
     def run_eval(self, val_loader):
+        
         self.logger.info("Start running evaluation on validation set:")
         self.set_eval()
 
@@ -886,6 +887,7 @@ class JointTrainer:
         elif label == "eval":
             savedir = os.path.join(logdir, self.name[0])
             directory(savedir)
+        self.logger.info("Saving visualization to {}".format(savedir))
 
         valid_mask = self.mask["full"]  # foreground mask
         hair_mask = self.mask["hair"]
