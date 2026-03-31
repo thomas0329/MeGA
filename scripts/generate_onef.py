@@ -1,6 +1,6 @@
 """Generate transforms_onef.json for canonical hair training.
 
-Extracts all camera views for a single timestep from transforms_train.json.
+Extracts all camera views for a single timestep from a source transforms JSON.
 """
 
 import argparse
@@ -12,9 +12,11 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--data_root", type=str, required=True)
     parser.add_argument("--timestep", type=int, default=0, help="Which timestep to use as canonical")
+    parser.add_argument("--source", type=str, default="transforms_train.json",
+                        help="Source transforms JSON filename")
     args = parser.parse_args()
 
-    train_path = os.path.join(args.data_root, "transforms_train.json")
+    train_path = os.path.join(args.data_root, args.source)
     with open(train_path) as f:
         data = json.load(f)
 

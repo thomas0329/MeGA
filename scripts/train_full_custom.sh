@@ -7,7 +7,7 @@ DATE=custom_multi-frame
 WORKSPACE=checkpoints/mega/$DATE/
 VERSION=train_whiteBg_b16_MeGA
 
-DEFAULT_PARAMS=./configs/nersemble/custom/full_whiteBg.yaml
+DEFAULT_PARAMS=./configs/nersemble/custom/full.yaml
 
 python train.py \
     --config_path $DEFAULT_PARAMS \

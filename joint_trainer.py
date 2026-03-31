@@ -844,7 +844,6 @@ class JointTrainer:
                 loss_dict["metrics/psnr"] = psnr
 
                 self.log_val(step, loss_dict)
-                self.visualization(outputs, self.global_step, label="eval")
 
             # log evaluation result
             self.logger.info("Evaluation finished, average losses: ")
